@@ -1,8 +1,9 @@
-// backend/src/app.ts
-import express, { Request, Response } from 'express';
+import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import userRoutes from './routes/userRoutes';
+import videoRoutes from './routes/videoRoutes';
 
 dotenv.config();
 
@@ -13,17 +14,10 @@ const PORT = process.env.PORT || 5000;
 app.use(express.json());
 app.use(cors());
 
-// Basic Route
-app.get('/', (req: Request, res: Response) => {
-  res.send('Backend is working!');
-});
+// Routes
+app.use('/api/users', userRoutes);
+app.use('/api/videos', videoRoutes);
 
-// Test Route for Frontend Connection
-app.get('/api/test', (req: Request, res: Response) => {
-  res.json({ message: 'Hello from the backend!' });
-});
-
-// Connect to MongoDB and Start the Server
 mongoose.connect(process.env.MONGODB_URI || '')
   .then(() => app.listen(PORT, () => console.log(`Server running on port ${PORT}`)))
   .catch((error) => console.error('Connection error', error));
