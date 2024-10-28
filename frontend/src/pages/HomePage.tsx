@@ -1,15 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import VideoCard from '../components/VideoCard';
-
-interface Video {
-  _id: string;
-  title: string;
-  url: string;
-  description: string;
-}
+import { IVideo } from '../types/IVideo';
 
 const HomePage: React.FC = () => {
-  const [videos, setVideos] = useState<Video[]>([]);
+  const [videos, setVideos] = useState<IVideo[]>([]);
 
   useEffect(() => {
     fetch('/api/videos')
@@ -19,16 +13,11 @@ const HomePage: React.FC = () => {
   }, []);
 
   return (
-    <div>
-      <h1 className="text-4xl font-bold text-center my-8 text-gray-800">Video Feed</h1>
+    <div className="container mx-auto px-4">
+      <h1 className="text-4xl font-bold text-center my-8 text-gray-800">Videos</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {videos.map(video => (
-          <VideoCard
-            key={video._id}
-            title={video.title}
-            url={video.url}
-            description={video.description}
-          />
+        {videos.map((video) => (
+          <VideoCard key={video._id} video={video} />
         ))}
       </div>
     </div>
