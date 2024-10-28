@@ -1,7 +1,7 @@
-Short-Form Video Streaming App
+# Short-Form Video Streaming App
 A responsive web application designed for sharing and browsing short-form video content in a scrolling format, similar to popular social media applications. The app focuses on delivering a seamless user experience, personalized content recommendations, and direct creator engagement. It includes options for users to subscribe, unlock additional content, and interact with creators within the platform.
 
-Features
+# Features
 User Authentication: Secure registration, login, and session management.
 Dynamic Video Feed: Continuous scrolling video feed with previews, similar to modern social platforms.
 Content Recommendation: An intelligent recommendation system powered by AI to serve personalized content based on user behavior.
@@ -25,9 +25,9 @@ AWS (EC2, S3, CloudFront) or Google Cloud for scalable cloud hosting
 Redis for caching and session management
 Docker for containerized deployments
 Nginx as a reverse proxy and load balancer for improved performance
-Project Structure
-plaintext
-Copy code
+
+# Project Structure
+
 project-root/
 ├── backend/
 │   ├── src/
