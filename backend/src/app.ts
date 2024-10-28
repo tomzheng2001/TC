@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import userRoutes from './routes/userRoutes';
 import videoRoutes from './routes/videoRoutes';
+import path from 'path';
 
 dotenv.config();
 
@@ -13,6 +14,8 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 app.use(express.json());
 app.use(cors());
+// Serve uploaded video files statically
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Routes
 app.use('/api/users', userRoutes);
