@@ -71,3 +71,99 @@ export const getPaginatedVideos = async (req: Request, res: Response) => {
       res.status(500).json({ message: 'Error fetching videos', error });
     }
 };
+
+// Like a Video
+export const likeVideo = async (req: Request, res: Response) => {
+  try {
+    const { id: videoId } = req.params;
+    const userId = (req as any).userId;
+
+    const video = await Video.findByIdAndUpdate(
+      videoId,
+      { $addToSet: { likes: userId } }, // Prevent duplicate likes
+      { new: true }
+    );
+
+    if (!video) {
+      res.status(404).json({ message: 'Video not found' });
+      return;
+    }
+    res.json(video);
+    return;
+  } catch (error) {
+    res.status(500).json({ message: 'Error liking video', error });
+    return;
+  }
+};
+
+// Unlike a Video
+export const unlikeVideo = async (req: Request, res: Response) => {
+  try {
+    const { id: videoId } = req.params;
+    const userId = (req as any).userId;
+
+    const video = await Video.findByIdAndUpdate(
+      videoId,
+      { $pull: { likes: userId } },
+      { new: true }
+    );
+
+    if (!video) {
+      res.status(404).json({ message: 'Video not found' });
+      return;
+    }
+    res.json(video);
+    return;
+  } catch (error) {
+    res.status(500).json({ message: 'Error unliking video', error });
+    return;
+  }
+};
+
+// Bookmark a Video
+export const bookmarkVideo = async (req: Request, res: Response) => {
+  try {
+    const { id: videoId } = req.params;
+    const userId = (req as any).userId;
+
+    const video = await Video.findByIdAndUpdate(
+      videoId,
+      { $addToSet: { bookmarks: userId } }, // Prevent duplicate bookmarks
+      { new: true }
+    );
+
+    if (!video) {
+      res.status(404).json({ message: 'Video not found' });
+      return;
+    }
+    res.json(video);
+    return;
+  } catch (error) {
+    res.status(500).json({ message: 'Error bookmarking video', error });
+    return;
+  }
+};
+
+// Unbookmark a Video
+export const unbookmarkVideo = async (req: Request, res: Response) => {
+  try {
+    const { id: videoId } = req.params;
+    const userId = (req as any).userId;
+
+    const video = await Video.findByIdAndUpdate(
+      videoId,
+      { $pull: { bookmarks: userId } },
+      { new: true }
+    );
+
+    if (!video) {
+      res.status(404).json({ message: 'Video not found' });
+      return;
+    }
+    res.json(video);
+    return;
+  } catch (error) {
+    res.status(500).json({ message: 'Error unbookmarking video', error });
+    return;
+  }
+};
