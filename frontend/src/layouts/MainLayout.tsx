@@ -8,6 +8,8 @@ interface MainLayoutProps {
 }
 
 const MainLayout: React.FC<MainLayoutProps> = ({ children, isAuthenticated, handleLogout }) => {
+  const userId = localStorage.getItem('userId'); // Retrieve userId from local storage
+
   return (
     <div className="min-h-screen flex flex-col">
       <header className="bg-blue-600 text-white p-4 shadow">
@@ -17,12 +19,15 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, isAuthenticated, hand
           </h1>
           <nav>
             {isAuthenticated ? (
-              <button
-                onClick={handleLogout}
-                className="bg-white text-blue-600 px-4 py-2 rounded hover:bg-gray-100"
-              >
-                Logout
-              </button>
+              <div className="flex items-center space-x-4">
+                <Link to={`/profile/${userId}`} className="hover:underline">Profile</Link>
+                <button
+                  onClick={handleLogout}
+                  className="bg-white text-blue-600 px-4 py-2 rounded hover:bg-gray-100"
+                >
+                  Logout
+                </button>
+              </div>
             ) : (
               <div>
                 <Link to="/login" className="mr-4 hover:underline">Login</Link>
@@ -33,7 +38,9 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, isAuthenticated, hand
         </div>
       </header>
 
-      <main className="flex-grow container mx-auto p-4">{children}</main>
+      <main className="flex-grow container mx-auto p-4">
+        {children}
+      </main>
 
       <footer className="bg-gray-200 text-black text-center p-4">
         <p>&copy; 2024 TC. All rights reserved.</p>

@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { IVideo } from '../types/IVideo';
 import VideoCard from '../components/VideoCard';
+import { useParams } from 'react-router-dom';
 
 const VideoFeed: React.FC = () => {
+  const { videoId } = useParams<{ videoId?: string }>();
   const [videos, setVideos] = useState<IVideo[]>([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -10,14 +12,28 @@ const VideoFeed: React.FC = () => {
   const fetchVideos = async (page: number) => {
     setLoading(true);
     const response = await fetch(`/api/videos/feed?page=${page}&limit=5`);
-    const data = await response.json();
+    const data: IVideo[] = await response.json();
+
     setVideos((prevVideos) => [...prevVideos, ...data]);
     setLoading(false);
   };
 
   useEffect(() => {
-    fetchVideos(page);
-  }, [page]);
+    const fetchInitialVideo = async () => {
+      if (videoId) {
+        try {
+          const response = await fetch(`/api/videos/${videoId}`);
+          const initialVideo = await response.json();
+          if (initialVideo) setVideos([initialVideo]);
+        } catch (error) {
+          console.error('Error fetching initial video:', error);
+        }
+      }
+    };
+    
+    fetchInitialVideo(); // Load the initial video if `videoId` is present
+    fetchVideos(page); // Load the first page of regular feed videos
+  }, [page, videoId]);
 
   useEffect(() => {
     const handleScroll = () => {

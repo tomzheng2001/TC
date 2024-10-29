@@ -7,17 +7,23 @@ interface VideoCardProps {
 
 const VideoCard: React.FC<VideoCardProps> = ({ video }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [liked, setLiked] = useState(false);
-  const [bookmarked, setBookmarked] = useState(false);
-  const [likeCount, setLikeCount] = useState(video.likeCount || 0);
-  const [bookmarkCount, setBookmarkCount] = useState(video.bookmarkCount || 0);
+  const [liked, setLiked] = useState(video.likes.includes(localStorage.getItem("userId")!));
+  const [bookmarked, setBookmarked] = useState(video.bookmarks.includes(localStorage.getItem("userId")!));
+  const [likeCount, setLikeCount] = useState(video.likes.length);
+  const [bookmarkCount, setBookmarkCount] = useState(video.bookmarks.length);
 
   useEffect(() => {
+    let playTimeout: NodeJS.Timeout;
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
+          clearTimeout(playTimeout);
           if (entry.isIntersecting) {
-            videoRef.current?.play();
+            playTimeout = setTimeout(() => {
+              videoRef.current?.play().catch((error) => {
+                console.warn("Play request interrupted:", error);
+              });
+            }, 200);
           } else {
             videoRef.current?.pause();
           }
@@ -31,8 +37,9 @@ const VideoCard: React.FC<VideoCardProps> = ({ video }) => {
     }
 
     const currentVideoRef = videoRef.current;
-
+    
     return () => {
+      clearTimeout(playTimeout);
       if (currentVideoRef) observer.unobserve(currentVideoRef);
     };
   }, []);
@@ -44,6 +51,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ video }) => {
         Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
     });
+    
     if (response.ok) {
       setLiked(!liked);
       setLikeCount(liked ? likeCount - 1 : likeCount + 1);
