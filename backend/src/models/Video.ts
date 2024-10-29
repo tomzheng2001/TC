@@ -6,6 +6,10 @@ export interface IVideo extends Document {
   creatorId: string;
   description: string;
   tags: string[];
+  likes: string[]; // Array of user IDs who liked the video
+  bookmarks: string[]; // Array of user IDs who bookmarked the video
+  likeCount?: number; // Optional because they may not always be present
+  bookmarkCount?: number;
 }
 
 const VideoSchema: Schema = new Schema({
@@ -14,6 +18,8 @@ const VideoSchema: Schema = new Schema({
   creatorId: { type: String, required: true },
   description: { type: String },
   tags: [{ type: String }],
+  likes: [{ type: String }],
+  bookmarks: [{ type: String }]
 });
 
 export default mongoose.model<IVideo>('Video', VideoSchema);

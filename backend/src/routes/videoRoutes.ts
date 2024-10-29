@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createVideo, getAllVideos, getPaginatedVideos } from '../controllers/videoController';
+import { bookmarkVideo, createVideo, getAllVideos, getPaginatedVideos, likeVideo, unbookmarkVideo, unlikeVideo } from '../controllers/videoController';
 import { authenticateToken } from '../middleware/authMiddleware'; // Ensure authenticated uploads
 
 const router = Router();
@@ -7,5 +7,10 @@ const router = Router();
 router.post('/upload', authenticateToken, createVideo);
 router.get('/', getAllVideos);
 router.get('/feed', getPaginatedVideos);
+
+router.post('/:id/like', authenticateToken, likeVideo);
+router.post('/:id/unlike', authenticateToken, unlikeVideo);
+router.post('/:id/bookmark', authenticateToken, bookmarkVideo);
+router.post('/:id/unbookmark', authenticateToken, unbookmarkVideo);
 
 export default router;
