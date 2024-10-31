@@ -20,9 +20,9 @@ const Login: React.FC = () => {
         body: JSON.stringify({ email, password }),
       });
       const data = await response.json();
-
       if (response.ok) {
         localStorage.setItem('token', data.token); // Store JWT in localStorage
+        localStorage.setItem('userId', data.userId);
         navigate('/'); // Redirect to the home page
       } else {
         setError(data.message || 'Login failed');

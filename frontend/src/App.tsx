@@ -7,6 +7,7 @@ import VideoUpload from './pages/VideoUpload';
 import VideoFeed from './pages/VideoFeed';
 import MainLayout from './layouts/MainLayout';
 import FullScreenLayout from './layouts/FullscreenLayout';
+import Profile from './pages/Profile';
 
 const App: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -54,6 +55,14 @@ const App: React.FC = () => {
           element={
             <MainLayout isAuthenticated={isAuthenticated} handleLogout={handleLogout}>
               <VideoUpload />
+            </MainLayout>
+          }
+        />
+        <Route
+          path="/profile/:userId"
+          element={
+            <MainLayout isAuthenticated={isAuthenticated} handleLogout={handleLogout}>
+              <Profile />
             </MainLayout>
           }
         />
