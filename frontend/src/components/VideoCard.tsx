@@ -12,12 +12,17 @@ const VideoCard: React.FC<VideoCardProps> = ({ video }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [liked, setLiked] = useState(false);
   const [bookmarked, setBookmarked] = useState(false);
-  const [likeCount, setLikeCount] = useState(video.likeCount || 0);
-  const [bookmarkCount, setBookmarkCount] = useState(video.bookmarkCount || 0);
+  const [likeCount, setLikeCount] = useState(video.likes.length || 0);
+  const [bookmarkCount, setBookmarkCount] = useState(video.bookmarks.length || 0);
   const [creatorUsername, setCreatorUsername] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
+    const userId = localStorage.getItem('userId');
+    if (userId) {
+      setLiked(video.likes.includes(userId));
+      setBookmarked(video.bookmarks.includes(userId));
+    }
     const getCreatorUsername = async () => {
       const response = await fetch(`/api/users/${video.creatorId}`, {
         method: 'GET',
@@ -56,7 +61,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ video }) => {
     return () => {
       if (currentVideoRef) observer.unobserve(currentVideoRef);
     };
-  }, [video.creatorId]);
+  }, [video.creatorId, video.bookmarks, video.likes]);
 
   const handleLike = async () => {
     const response = await fetch(`/api/videos/${video._id}/${liked ? 'unlike' : 'like'}`, {
