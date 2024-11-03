@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const Login: React.FC = () => {
+interface LoginProps {
+  onLogin: () => void;
+}
+
+const Login: React.FC<LoginProps> = ({ onLogin }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -20,10 +24,12 @@ const Login: React.FC = () => {
         body: JSON.stringify({ email, password }),
       });
       const data = await response.json();
+
       if (response.ok) {
-        localStorage.setItem('token', data.token); // Store JWT in localStorage
-        localStorage.setItem('userId', data.userId);
-        navigate('/'); // Redirect to the home page
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('userId', data.userId); // Store userId for the profile link
+        onLogin();
+        navigate('/');
       } else {
         setError(data.message || 'Login failed');
       }
@@ -61,9 +67,6 @@ const Login: React.FC = () => {
             Login
           </button>
         </form>
-        <p className="text-sm text-center mt-4">
-          Don't have an account? <a href="/register" className="text-blue-500 hover:underline">Register here</a>
-        </p>
       </div>
     </div>
   );

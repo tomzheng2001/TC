@@ -10,22 +10,25 @@ import FullScreenLayout from './layouts/FullscreenLayout';
 import Profile from './pages/Profile';
 
 const App: React.FC = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    setIsAuthenticated(!!token);
-  }, []);
+  const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('token'));
 
   const handleLogout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('userId');
     setIsAuthenticated(false);
   };
+
+  const handleLogin = () => {
+    setIsAuthenticated(!!localStorage.getItem('token'));
+  };
+
+  useEffect(() => {
+    setIsAuthenticated(!!localStorage.getItem('token'));
+  }, []);
 
   return (
     <Router>
       <Routes>
-        {/* MainLayout routes */}
         <Route
           path="/"
           element={
@@ -38,7 +41,7 @@ const App: React.FC = () => {
           path="/login"
           element={
             <MainLayout isAuthenticated={isAuthenticated} handleLogout={handleLogout}>
-              {isAuthenticated ? <Navigate to="/" /> : <Login />}
+              {isAuthenticated ? <Navigate to="/" /> : <Login onLogin={handleLogin} />}
             </MainLayout>
           }
         />
@@ -66,8 +69,6 @@ const App: React.FC = () => {
             </MainLayout>
           }
         />
-
-        {/* FullScreenLayout route for VideoFeed */}
         <Route
           path="/feed"
           element={

@@ -1,52 +1,67 @@
 import { Request, Response } from 'express';
 import multer from 'multer';
-import path from 'path';
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import Video from '../models/Video';
+import path from 'path';
+import dotenv from 'dotenv';
 
-// Configure Multer for file uploads
-const storage = multer.diskStorage({
-  destination: './uploads/videos/',
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname));
-  }
+dotenv.config();
+
+const s3Client = new S3Client({
+  region: process.env.AWS_REGION,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+  },
 });
 
-export const upload = multer({ storage }).single('video');
+const upload = multer({ storage: multer.memoryStorage() }).single('video');
 
 export const createVideo = async (req: Request, res: Response) => {
-    upload(req, res, async (err) => {
-      if (err) {
-        console.error('Multer error:', err);
-        return res.status(500).json({ message: 'Video upload failed', error: err.message });
-      }
-  
-      const { title, description, tags } = req.body;
-      const videoFile = req.file?.filename;
-      const creatorId = (req as any).userId;
-  
-      if (!videoFile) {
-        return res.status(400).json({ message: 'No video file uploaded' });
-      }
-  
-      try {
-        const video = new Video({
-          title,
-          url: `/uploads/videos/${videoFile}`,
-          creatorId,
-          description,
-          tags: tags ? tags.split(',') : []
-        });
-  
-        await video.save();
-        res.status(201).json({ message: 'Video uploaded successfully', video });
-      } catch (error) {
-        console.error('Error saving video to database:', error);
-        res.status(500).json({ message: 'Failed to save video', error });
-      }
-    });
+  upload(req, res, async (err) => {
+    if (err) {
+      console.error('Multer error:', err);
+      return res.status(500).json({ message: 'Video upload failed', error: err.message });
+    }
+
+    const { title, description, tags } = req.body;
+    const file = req.file;
+    const creatorId = (req as any).userId;
+
+    if (!file) {
+      return res.status(400).json({ message: 'No video file uploaded' });
+    }
+
+    const s3Key = `${Date.now()}_${path.basename(file.originalname)}`
+
+    try {
+      const putObjectParams = {
+        Bucket: process.env.AWS_BUCKET_NAME,
+        Key: s3Key,
+        Body: file.buffer,
+        ContentType: file.mimetype,
+      };
+
+      await s3Client.send(new PutObjectCommand(putObjectParams));
+      const videoUrl = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${s3Key}`;
+
+      const video = new Video({
+        title,
+        url: videoUrl,
+        creatorId,
+        description,
+        tags: tags ? tags.split(',') : [],
+      });
+
+      await video.save();
+      res.status(201).json({ message: 'Video uploaded successfully', video });
+    } catch (error) {
+      console.error('Error saving video to database:', error);
+      res.status(500).json({ message: 'Failed to save video', error });
+    }
+  });
 };
 
-// Get All Videos
 export const getAllVideos = async (req: Request, res: Response) => {
   try {
     const videos = await Video.find();
@@ -128,7 +143,7 @@ export const bookmarkVideo = async (req: Request, res: Response) => {
 
     const video = await Video.findByIdAndUpdate(
       videoId,
-      { $addToSet: { bookmarks: userId } }, // Prevent duplicate bookmarks
+      { $addToSet: { bookmarks: userId } },
       { new: true }
     );
 
