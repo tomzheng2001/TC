@@ -71,6 +71,23 @@ export const getAllVideos = async (req: Request, res: Response) => {
   }
 };
 
+export const getVideoById = async (req: Request, res: Response) => {
+  try {
+      const videoId = req.params.id;
+      const video = await Video.findById(videoId);
+
+      if (!video) {
+          res.status(404).json({ message: 'Video not found' });
+          return;
+      }
+
+      res.status(200).json(video);
+  } catch (error) {
+      console.error('Error fetching video by ID:', error);
+      res.status(500).json({ message: 'Error fetching video', error });
+  }
+};
+
 export const getPaginatedVideos = async (req: Request, res: Response) => {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 5;
