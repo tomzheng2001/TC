@@ -1,8 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { IVideo } from '../types/IVideo';
-import { useNavigate } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHeart, faBookmark, faUserCircle } from '@fortawesome/free-solid-svg-icons';
 
 interface VideoCardProps {
   video: IVideo;
@@ -14,26 +11,8 @@ const VideoCard: React.FC<VideoCardProps> = ({ video }) => {
   const [bookmarked, setBookmarked] = useState(false);
   const [likeCount, setLikeCount] = useState(video.likeCount || 0);
   const [bookmarkCount, setBookmarkCount] = useState(video.bookmarkCount || 0);
-  const [creatorUsername, setCreatorUsername] = useState('');
-  const navigate = useNavigate();
 
   useEffect(() => {
-    const getCreatorUsername = async () => {
-      const response = await fetch(`/api/users/${video.creatorId}`, {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setCreatorUsername(data.username);
-      } else {
-        console.error('Failed to fetch creator username');
-      }
-    };
-    getCreatorUsername();
-
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -56,7 +35,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ video }) => {
     return () => {
       if (currentVideoRef) observer.unobserve(currentVideoRef);
     };
-  }, [video.creatorId]);
+  }, []);
 
   const handleLike = async () => {
     const response = await fetch(`/api/videos/${video._id}/${liked ? 'unlike' : 'like'}`, {
@@ -84,12 +63,8 @@ const VideoCard: React.FC<VideoCardProps> = ({ video }) => {
     }
   };
 
-  const goToCreatorProfile = () => {
-    navigate(`/profile/${video.creatorId}`);
-  };
-
   return (
-    <div className="relative h-screen overflow-hidden bg-black">
+    <div className="relative h-screen overflow-hidden">
       <video
         ref={videoRef}
         src={video.url}
@@ -98,45 +73,23 @@ const VideoCard: React.FC<VideoCardProps> = ({ video }) => {
         muted
         playsInline
       />
-      
-      {/* Floating Text Overlay */}
-      <div className="absolute bottom-10 left-4 bg-gray-900 bg-opacity-50 text-white p-3 rounded-md max-w-xs">
-        <h2 className="text-lg font-bold">{video.title}</h2>
-        <p className="text-sm mt-1 text-gray-200">{video.description}</p>
-      </div>
-
-      {/* Vertical Action Bar */}
-      <div className="absolute bottom-10 right-4 flex flex-col items-center space-y-4">
-        {/* Profile Placeholder */}
-        <div
-          onClick={goToCreatorProfile}
-          className="cursor-pointer"
-          title={creatorUsername || 'Unknown'}
-        >
-          <FontAwesomeIcon icon={faUserCircle} size="3x" className="text-gray-400" />
+      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-50 p-4 w-11/12 max-w-md rounded-lg text-white text-center">
+        <h2 className="text-xl font-semibold">{video.title}</h2>
+        <p className="text-sm mt-1">{video.description}</p>
+        <div className="flex justify-center mt-4 space-x-4">
+          <button
+            onClick={handleLike}
+            className={`px-4 py-2 rounded ${liked ? 'bg-red-500' : 'bg-gray-500'} text-white`}
+          >
+            {liked ? 'Unlike' : 'Like'} {likeCount}
+          </button>
+          <button
+            onClick={handleBookmark}
+            className={`px-4 py-2 rounded ${bookmarked ? 'bg-blue-500' : 'bg-gray-500'} text-white`}
+          >
+            {bookmarked ? 'Unsave' : 'Save'} {bookmarkCount}
+          </button>
         </div>
-
-        {/* Like Button */}
-        <button
-          onClick={handleLike}
-          className={`flex items-center justify-center w-10 h-10 rounded-full transition ${
-            liked ? 'bg-red-600 text-white' : 'bg-gray-700 text-white'
-          }`}
-        >
-          <FontAwesomeIcon icon={faHeart} />
-          <span className="text-xs ml-1">{likeCount}</span>
-        </button>
-
-        {/* Save Button */}
-        <button
-          onClick={handleBookmark}
-          className={`flex items-center justify-center w-10 h-10 rounded-full transition ${
-            bookmarked ? 'bg-blue-600 text-white' : 'bg-gray-700 text-white'
-          }`}
-        >
-          <FontAwesomeIcon icon={faBookmark} />
-          <span className="text-xs ml-1">{bookmarkCount}</span>
-        </button>
       </div>
     </div>
   );
