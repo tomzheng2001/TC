@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import VideoCard from '../components/VideoCard';
+import VideoThumbnail from '../components/VideoThumbnail';
 import { IVideo } from '../types/IVideo';
 
 const HomePage: React.FC = () => {
@@ -19,20 +19,31 @@ const HomePage: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto px-4">
-      <div className="flex justify-between items-center my-8">
-        <h1 className="text-4xl font-bold text-gray-800">Videos</h1>
+    <div className="h-full flex flex-col bg-midnightblue">
+      {/* Header Section */}
+      <div className="flex justify-between items-center px-6 py-4">
+        <h1 className="text-4xl font-bold text-white">For You</h1>
         <button
           onClick={handleUploadClick}
-          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded transition duration-200"
+          className="bg-neonpurple hover:midnightblue text-white font-semibold py-2 px-4 rounded transition duration-200"
         >
           Upload Video
         </button>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {videos && videos.map((video) => (
-          <VideoCard key={video._id} video={video} />
-        ))}
+
+      {/* Video Grid - Full Screen */}
+      <div className="flex-grow overflow-y-scroll">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-0 h-full">
+          {videos.map((video) => (
+            <div
+              key={video._id}
+              onClick={() => navigate(`/feed/${video._id}`)}
+              className="cursor-pointer"
+            >
+              <VideoThumbnail video={video} />
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
