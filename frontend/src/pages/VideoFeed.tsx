@@ -23,10 +23,30 @@ const VideoFeed: React.FC = () => {
               uniqueVideos.forEach((video) => prevIds.add(video._id));
               return prevIds;
           });
+          
           setLoading(false);
         };
-        if (!videoId) fetchVideos();
-    }, [page, videoId, videoIds]);
+        const fetchInitialVideo = async () => {
+            if (videoId) {
+              setLoading(true);
+              const response = await fetch(`/api/videos/${videoId}`);
+              const data = await response.json();
+              if (data && !videoIds.has(data._id)) {
+                setVideos([data, ...videos]);
+                setVideoIds((prevIds) => {
+                    prevIds.add(videoId);
+                    return prevIds;
+                })
+              }
+              setLoading(false);
+            }
+        };
+        if (videoId && page === 1 && videos.length === 0) {
+            fetchInitialVideo().then(() => fetchVideos());
+        } else {
+            fetchVideos();
+        }
+    }, [page, videos, videoId, videoIds]);
 
     useEffect(() => {
         const handleScroll = () => {
