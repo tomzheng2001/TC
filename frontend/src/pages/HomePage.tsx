@@ -32,7 +32,7 @@ const HomePage: React.FC = () => {
       </div>
 
       {/* Video Grid - Full Screen */}
-      <div className="flex-grow overflow-y-scroll">
+      <div className="flex-grow overflow-hidden">
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-0 h-full">
           {videos.map((video) => (
             <div

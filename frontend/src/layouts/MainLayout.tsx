@@ -24,7 +24,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
   const { userId: paramUserId } = useParams<{ userId?: string }>();
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen min-w-screen flex flex-col">
       <header className="bg-midnightblue text-white p-4 shadow flex-none sticky top-0 z-10">
         <div className="container mx-auto flex justify-between items-center">
           <h1 className="text-xl font-bold">
@@ -53,7 +53,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
         </div>
       </header>
 
-      <main className="flex-grow overflow-y-auto container mx-auto bg-midnightblue">{children}</main>
+      <main className="flex-grow overflow-y-auto container min-w-full bg-midnightblue">{children}</main>
 
       <nav className="bg-midnightblue text-neonpurple flex justify-around items-center p-3 fixed bottom-0 inset-x-0">
         <Link to="/" className="text-center">
