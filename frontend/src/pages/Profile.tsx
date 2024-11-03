@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import VideoCard from '../components/VideoCard';
 import { IVideo } from '../types/IVideo';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import VideoThumbnail from '../components/VideoThumbnail';
 
 interface ProfileData {
     username: string;
@@ -12,6 +12,7 @@ interface ProfileData {
 
 const Profile: React.FC = () => {
     const { userId } = useParams<{ userId: string }>();
+    const navigate = useNavigate();
     const [profile, setProfile] = useState<ProfileData | null>(null);
     const [uploadedVideos, setUploadedVideos] = useState<IVideo[]>([]);
     const [isSubscribed, setIsSubscribed] = useState(false);
@@ -25,7 +26,6 @@ const Profile: React.FC = () => {
                     headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
                 });
                 const data = await response.json();
-                console.log(data);
                 setProfile({
                     ...data.user
                 });
@@ -64,40 +64,51 @@ const Profile: React.FC = () => {
             setIsSubscribed((prevSubscribed) => !prevSubscribed);
             console.error('Error subscribing:', error);
         } finally {
-            setIsSubscribeLoading(false); // Re-enable the button
+            setIsSubscribeLoading(false);
         }
     };
 
     if (!profile) return <p>Loading profile...</p>;
 
     return (
-        <div className="container mx-auto p-4">
-            <h1 className="text-3xl font-bold mb-4">{profile.username}'s Profile</h1>
+        <div className="h-screen overflow-y-auto p-6 bg-midnightblue">
+            <div className="flex flex-col items-center md:items-start md:flex-row mb-6 space-y-4 md:space-y-0 md:space-x-6">
+                <h1 className="text-3xl font-bold text-white">{profile.username}</h1>
+                
+                <div className="flex space-x-6 items-center text-white">
+                    <div className="text-center">
+                        <p className="font-semibold text-lg">{subscriberCount}</p>
+                        <p className="text-sm text-gray-300">Subscribers</p>
+                    </div>
+                    <div className="text-center">
+                        <p className="font-semibold text-lg">{profile.subscriptions.length}</p>
+                        <p className="text-sm text-gray-300">Subscriptions</p>
+                    </div>
+                </div>
 
-            {profile.bio && <p className="text-lg font-light mb-4">{profile.bio}</p>}
-            
-            {localStorage.getItem('userId') !== userId && <button
-                disabled={isSubscribeLoading}
-                onClick={handleSubscriptionToggle}
-                className={`px-4 py-2 mt-2 rounded ${isSubscribed ? 'bg-red-500' : 'bg-blue-500'} text-white`}
-            >
-                {isSubscribed ? 'Unsubscribe' : 'Subscribe'}
-            </button>}
-
-            <h2 className="text-xl font-semibold mt-4 mb-2">Uploaded Videos</h2>
-            <div className="grid grid-cols-2 gap-4">
-                {uploadedVideos.length > 0 ? (
-                    uploadedVideos.map(video => (
-                        <VideoCard key={video._id} video={video} />
-                    ))
-                ) : (
-                    <p className="text-gray-500">No videos uploaded yet.</p>
+                {localStorage.getItem('userId') !== userId && (
+                    <button
+                        onClick={handleSubscriptionToggle}
+                        disabled={isSubscribeLoading}
+                        className={`px-6 py-2 rounded text-white ${isSubscribed ? 'bg-red-500' : 'bg-blue-500'}`}
+                    >
+                        {isSubscribed ? 'Unsubscribe' : 'Subscribe'}
+                    </button>
                 )}
             </div>
-
-            <h2 className="text-xl font-semibold mt-6">Connections</h2>
-            <p>Subscribers: {subscriberCount}</p>
-            <p>Subscriptions: {profile.subscriptions.length}</p>
+            <h2 className="text-xl text-white font-semibold mt-4 mb-2">Uploaded Videos</h2>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {uploadedVideos.length > 0 ? (
+                    uploadedVideos.map((video) => (
+                        <div onClick={() => navigate(`/feed/${video._id}`)}
+                        className="cursor-pointer">
+                            <VideoThumbnail key={video._id} video={video} />
+                        </div>
+                    ))
+                ) : (
+                    <p className="text-center col-span-full text-white">No videos uploaded yet.</p>
+                )}
+            </div>
         </div>
     );
 };
