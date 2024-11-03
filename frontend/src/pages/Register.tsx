@@ -34,9 +34,9 @@ const Register: React.FC = () => {
   };
 
   return (
-    <div className="flex items-center justify-center h-full bg-midnightblue">
-      <div className="p-8 rounded shadow-md w-full max-w-sm">
-        <h2 className="text-2xl text-white font-bold mb-4 text-center">Register</h2>
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <div className="bg-white p-8 rounded shadow-md w-full max-w-sm">
+        <h2 className="text-2xl font-bold mb-4 text-center">Register</h2>
         {error && <p className="text-red-600 text-center mb-4">{error}</p>}
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
@@ -65,13 +65,13 @@ const Register: React.FC = () => {
           />
           <button
             type="submit"
-            className="w-full bg-neonpurple text-white py-2 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             Register
           </button>
         </form>
-        <p className="text-white text-sm text-center mt-4">
-          Already have an account? <a href="/login" className="text-neonpurple hover:underline">Login here</a>
+        <p className="text-sm text-center mt-4">
+          Already have an account? <a href="/login" className="text-blue-500 hover:underline">Login here</a>
         </p>
       </div>
     </div>

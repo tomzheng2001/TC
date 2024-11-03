@@ -8,7 +8,6 @@ import VideoFeed from './pages/VideoFeed';
 import MainLayout from './layouts/MainLayout';
 import FullScreenLayout from './layouts/FullscreenLayout';
 import Profile from './pages/Profile';
-import PrivateRoute from './components/PrivateRoute';
 
 const App: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('token'));
@@ -33,11 +32,9 @@ const App: React.FC = () => {
         <Route
           path="/"
           element={
-            <PrivateRoute isAuthenticated={isAuthenticated}>
-              <MainLayout isAuthenticated={isAuthenticated} handleLogout={handleLogout}>
-                <HomePage />
-              </MainLayout>
-            </PrivateRoute>
+            <MainLayout isAuthenticated={isAuthenticated} handleLogout={handleLogout}>
+              <HomePage />
+            </MainLayout>
           }
         />
         <Route
@@ -59,25 +56,21 @@ const App: React.FC = () => {
         <Route
           path="/upload"
           element={
-            <PrivateRoute isAuthenticated={isAuthenticated}>
-              <MainLayout isAuthenticated={isAuthenticated} handleLogout={handleLogout}>
-                <VideoUpload />
-              </MainLayout>
-            </PrivateRoute>
+            <MainLayout isAuthenticated={isAuthenticated} handleLogout={handleLogout}>
+              <VideoUpload />
+            </MainLayout>
           }
         />
         <Route
           path="/profile/:userId"
           element={
-            <PrivateRoute isAuthenticated={isAuthenticated}>
-              <MainLayout isAuthenticated={isAuthenticated} handleLogout={handleLogout}>
-                <Profile />
-              </MainLayout>
-            </PrivateRoute>
+            <MainLayout isAuthenticated={isAuthenticated} handleLogout={handleLogout}>
+              <Profile />
+            </MainLayout>
           }
         />
         <Route
-          path="/feed/:videoId?"
+          path="/feed"
           element={
             <FullScreenLayout>
               <VideoFeed />

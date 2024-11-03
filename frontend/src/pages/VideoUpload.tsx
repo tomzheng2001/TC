@@ -52,10 +52,10 @@ const VideoUpload: React.FC = () => {
   };
 
   return (
-    <div className="h-full p-6 bg-midnightblue shadow-md">
-      <h2 className="text-2xl text-white font-bold mb-4 text-center">Upload Video</h2>
+    <div className="max-w-md mx-auto mt-8 p-6 bg-white rounded-lg shadow-md">
+      <h2 className="text-2xl font-bold mb-4 text-center">Upload Video</h2>
       {message && <p className="text-center mb-4 text-red-500">{message}</p>}
-      <form onSubmit={handleSubmit} className="space-y-4 flex-grow">
+      <form onSubmit={handleSubmit} className="space-y-4">
         <input
           type="text"
           placeholder="Title"
@@ -82,12 +82,12 @@ const VideoUpload: React.FC = () => {
           type="file"
           accept="video/*"
           onChange={handleFileChange}
-          className="w-full text-white px-4 py-2 border border-gray-300 rounded"
+          className="w-full px-4 py-2 border border-gray-300 rounded"
           required
         />
         <button
           type="submit"
-          className="w-full bg-neonpurple text-white py-2 rounded hover:bg-blue-600"
+          className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
         >
           Upload Video
         </button>
