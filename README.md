@@ -10,3 +10,13 @@ npm run dev
 cd frontend
 npm start
 ```
+
+Add the following environment variables in backend:
+```
+PORT
+MONGODB_URI
+AWS_ACCESS_KEY_ID
+AWS_SECRET_ACCESS_KEY
+AWS_BUCKET_NAME
+AWS_REGION
+```
