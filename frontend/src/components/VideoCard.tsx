@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import { IVideo } from '../types/IVideo';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHeart, faBookmark, faUserCircle } from '@fortawesome/free-solid-svg-icons';
+import { faHeart, faBookmark, faUserCircle, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 
 interface VideoCardProps {
   video: IVideo;
@@ -93,8 +93,24 @@ const VideoCard: React.FC<VideoCardProps> = ({ video }) => {
     navigate(`/profile/${video.creatorId}`);
   };
 
+  const goBack = () => {
+    if (window.history.length > 1) {
+      navigate(-1); // Go back if there's a previous page in the history stack
+    } else {
+      navigate('/'); // Default to the home page if no previous page
+    }
+  };
+
   return (
     <div className="relative h-screen overflow-hidden bg-black">
+      {/* Back Button */}
+      <button
+        onClick={goBack}
+        className="absolute top-4 left-4 p-2 rounded-full text-white hover:bg-gray-700 transition z-10"
+      >
+        <FontAwesomeIcon icon={faArrowLeft} size="lg" />
+      </button>
+
       <video
         ref={videoRef}
         src={video.url}
